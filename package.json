@@ -1,0 +1,35 @@
+{
+  "name": "despues-dividimos",
+  "version": "1.0.0",
+  "description": "Application for managing shared expenses and balances between groups.",
+  "keywords": [
+    "expenses",
+    "group-expenses",
+    "shared-expenses",
+    "finance",
+    "backend",
+    "typescript"
+  ],
+  "homepage": "https://github.com/Bruno-Sanchez-GH/Despues-dividimos.#readme",
+  "bugs": {
+    "url": "https://github.com/Bruno-Sanchez-GH/Despues-dividimos./issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bruno-Sanchez-GH/Despues-dividimos..git"
+  },
+  "license": "MIT",
+  "author": "Bruno Nicolas Sanchez",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
