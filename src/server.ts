@@ -2,7 +2,7 @@
 import app from "./app.js";
 
 // Elegimos un puerto
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 
 // Iniciamos el servidor
 app.listen(PORT, () => {
