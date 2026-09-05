@@ -36,7 +36,7 @@ model grupo {
 model membresia {
   usuarioId Int
   grupoId Int
-  invitacionId Int?
+  invitacionId Int? @unique
 
   usuario usuario @relation(fields: [usuarioId], references: [id])
   grupo grupo @relation(fields: [grupoId], references: [id])
@@ -64,5 +64,5 @@ model invitacion {
   estado EstadoInvitacion @default(PENDIENTE)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  membresias membresia[]
+  membresias membresia?
 }
