@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model usuario {
+  id Int @id @default(autoincrement())
+  nombre String
+  email String @unique
+  passwordHash String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  membresias membresia[]
+  invitador invitacion[] @relation("Invitador")
+  invitado invitacion[] @relation("Invitado")
+}
+
+model grupo {
+  id Int @id @default(autoincrement())
+  nombre String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  membresias membresia[]
+  invitaciones invitacion[]
+}
+
+model membresia {
+  usuarioId Int
+  grupoId Int
+  invitacionId Int? @unique
+
+  usuario usuario @relation(fields: [usuarioId], references: [id])
+  grupo grupo @relation(fields: [grupoId], references: [id])
+  invitacion invitacion? @relation(fields: [invitacionId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([usuarioId, grupoId])
+}
+
+enum EstadoInvitacion {
+  PENDIENTE
+  ACEPTADA
+  RECHAZADA
+}
+
+model invitacion {
+  id Int @id @default(autoincrement())
+  invitador_id Int
+  invitado_id Int
+  grupo_id Int
+  Invitador usuario @relation("Invitador", fields: [invitador_id], references: [id])
+  Invitado  usuario @relation("Invitado", fields: [invitado_id], references: [id])
+  grupo grupo @relation(fields: [grupo_id], references: [id])
+  estado EstadoInvitacion @default(PENDIENTE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  membresias membresia?
+}
