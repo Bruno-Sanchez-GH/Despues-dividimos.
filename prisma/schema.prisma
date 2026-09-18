@@ -22,6 +22,8 @@ model usuario {
   membresias membresia[]
   invitador invitacion[] @relation("Invitador")
   invitado invitacion[] @relation("Invitado")
+  actividadesCreadas actividad[]
+  participaciones participante[]
 }
 
 model grupo {
@@ -31,6 +33,7 @@ model grupo {
   updatedAt DateTime @updatedAt
   membresias membresia[]
   invitaciones invitacion[]
+  actividades actividad[]
 }
 
 model membresia {
@@ -65,4 +68,30 @@ model invitacion {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   membresias membresia?
+}
+
+model actividad {
+  id Int @id @default(autoincrement())
+  nombre String
+  grupoId Int
+  creadorId Int
+  grupo grupo @relation(fields: [grupoId], references: [id])
+  creador usuario @relation(fields: [creadorId], references: [id])
+  participantes participante[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([grupoId])
+}
+
+model participante {
+  usuarioId Int
+  actividadId Int
+  usuario usuario @relation(fields: [usuarioId], references: [id])
+  actividad actividad @relation(fields: [actividadId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([usuarioId, actividadId])
+  @@index([actividadId])
 }
