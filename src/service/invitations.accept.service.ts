@@ -17,19 +17,15 @@ async function acceptInvitation(invitationId: number, userId: number) {
     }
     const newEstado = await prisma.invitacion.update({
     where: {
-        id: invitationId
+        id: invitationId,
+        invitado_id: userId,
+        estado: "PENDIENTE"
     },
     data: {
-        estado: "ACEPTADA"
+        estado: "ACEPTADA",
+        membresias: { create: { usuarioId: userId, grupoId: invitation.grupo_id } }
     }
     });
-    const newMembresia = await prisma.membresia.create({
-        data:{
-        usuarioId : userId,
-        grupoId : invitation.grupo_id,
-        invitacionId : invitation.id
-        }
-    });
-    return newMembresia;
+    return newEstado;
 }
 export default acceptInvitation;

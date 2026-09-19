@@ -3,3 +3,8 @@ dist/
 .env
 *.log
 src/generated/
+*.tsbuildinfo
+frontend/.env.*
+!frontend/.env.example
+frontend/test-results/
+frontend/playwright-report/

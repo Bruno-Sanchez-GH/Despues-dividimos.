@@ -6,7 +6,7 @@ async function listGroups(userId: number){
         usuarioId: userId
         },
         include: {
-            grupo: true
+            grupo: { include: { _count: { select: { membresias: true } } } }
         }
         
     });

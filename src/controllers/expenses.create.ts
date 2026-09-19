@@ -1,6 +1,7 @@
 import type { Response } from "express";
 import type{ AuthRequest} from "../types/auth-request.js";
 import createExpense from "../service/expenses.create.service.js";
+import createContributions from "../service/expenses.contributions.service.js";
 
 async function create(req: AuthRequest, res: Response) {
     const userId = req.userId;
@@ -12,6 +13,10 @@ async function create(req: AuthRequest, res: Response) {
         });
     }
     try{
+        if (req.body && Object.hasOwn(req.body, "aportes")) {
+            const expenses = await createContributions(activityId, userId, req.body);
+            return res.status(201).json({ message: "Aportes guardados correctamente", newExpenses: expenses.map((e) => ({ ...e, monto: e.monto.toFixed(2) })) });
+        }
         const { concepto, monto, pagadorId } = req.body ?? {};
         const newExpense = await createExpense(activityId, userId, concepto, monto, pagadorId);
         return res.status(201).json({
