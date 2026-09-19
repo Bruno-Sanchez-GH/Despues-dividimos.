@@ -24,6 +24,7 @@ model usuario {
   invitado invitacion[] @relation("Invitado")
   actividadesCreadas actividad[]
   participaciones participante[]
+  gastosPagados gasto[]
 }
 
 model grupo {
@@ -79,6 +80,7 @@ model actividad {
   grupo grupo @relation(fields: [grupoId], references: [id])
   creador usuario @relation(fields: [creadorId], references: [id])
   participantes participante[]
+  gastos gasto[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -94,5 +96,19 @@ model participante {
   updatedAt DateTime @updatedAt
 
   @@id([usuarioId, actividadId])
+  @@index([actividadId])
+}
+
+model gasto {
+  id Int @id @default(autoincrement())
+  actividadId Int
+  pagadorId Int
+  concepto String
+  monto Decimal @db.Decimal(14, 2)
+  actividad actividad @relation(fields: [actividadId], references: [id])
+  pagador usuario @relation(fields: [pagadorId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([actividadId])
 }
