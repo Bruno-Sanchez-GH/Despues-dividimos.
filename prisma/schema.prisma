@@ -73,6 +73,7 @@ model invitacion {
 model actividad {
   id Int @id @default(autoincrement())
   nombre String
+  startAt DateTime
   grupoId Int
   creadorId Int
   grupo grupo @relation(fields: [grupoId], references: [id])

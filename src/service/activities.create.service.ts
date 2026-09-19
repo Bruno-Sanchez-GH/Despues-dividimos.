@@ -1,6 +1,6 @@
 import prisma from "../prisma.js";
 
-async function createActivity(grupoId: number, userId: number, nombre: string, participantes: number[]) {
+async function createActivity(grupoId: number, userId: number, nombre: string, participantes: number[], startAt?: string) {
     if (!Number.isInteger(grupoId) || grupoId <= 0 || grupoId > 2147483647) {
         throw new Error("El groupId debe ser un entero positivo valido");
     }
@@ -30,6 +30,25 @@ async function createActivity(grupoId: number, userId: number, nombre: string, p
     if (new Set(participantes).size !== participantes.length) {
         throw new Error("No puede repetir participantes en la actividad");
     }
+    let fechaInicio: Date | undefined;
+    if (startAt !== undefined) {
+        const parts = typeof startAt === "string"
+            ? /^(\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d{1,3})?(?:Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)$/.exec(startAt)
+            : null;
+        if (!parts) {
+            throw new Error("startAt debe ser una fecha ISO 8601 valida con hora y zona horaria");
+        }
+        const year = Number(parts[1]);
+        const month = Number(parts[2]);
+        const day = Number(parts[3]);
+        const leapYear = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+        const daysInMonth = [31, leapYear ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        fechaInicio = new Date(startAt);
+        // Date normaliza dias inexistentes, por eso se comprueba tambien el calendario.
+        if (year === 0 || day > (daysInMonth[month - 1] ?? 0) || Number.isNaN(fechaInicio.getTime())) {
+            throw new Error("startAt debe ser una fecha ISO 8601 valida con hora y zona horaria");
+        }
+    }
     const users = await prisma.usuario.findMany({
         where: { id: { in: participantes } },
         select: { id: true }
@@ -48,6 +67,7 @@ async function createActivity(grupoId: number, userId: number, nombre: string, p
     const newActivity = await prisma.actividad.create({
         data: {
             nombre: nombre.trim(),
+            startAt: fechaInicio ?? new Date(),
             grupoId,
             creadorId: userId,
             participantes: {

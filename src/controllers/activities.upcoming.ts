@@ -1,8 +1,8 @@
 import type { Response } from "express";
 import type{ AuthRequest} from "../types/auth-request.js";
-import createActivity from "../service/activities.create.service.js";
+import listUpcomingActivities from "../service/activities.upcoming.service.js";
 
-async function create(req: AuthRequest, res: Response) {
+async function upcoming(req: AuthRequest, res: Response) {
     const userId = req.userId;
     const grupoId = Number(req.params.groupId);
 
@@ -12,11 +12,10 @@ async function create(req: AuthRequest, res: Response) {
         });
     }
     try{
-        const { nombre, participantes, startAt } = req.body ?? {};
-        const newActivity = await createActivity(grupoId, userId, nombre, participantes, startAt);
-        return res.status(201).json({
-            message: "Actividad creada correctamente",
-            newActivity
+        const activities = await listUpcomingActivities(grupoId, userId);
+        return res.status(200).json({
+            message: "Proximas actividades obtenidas correctamente",
+            activities
         });
     }
     catch (error) {
@@ -25,4 +24,4 @@ async function create(req: AuthRequest, res: Response) {
         });
     }
 }
-export default create;
+export default upcoming;
