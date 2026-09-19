@@ -1,6 +1,7 @@
 import prisma from "../prisma.js";
+import { validateExpense, type ExpenseInput } from "./expenses.validate.js";
 
-async function createActivity(grupoId: number, userId: number, nombre: string, participantes: number[], startAt?: string) {
+async function createActivity(grupoId: number, userId: number, nombre: string, participantes: number[], startAt?: string, initialExpense?: ExpenseInput) {
     if (!Number.isInteger(grupoId) || grupoId <= 0 || grupoId > 2147483647) {
         throw new Error("El groupId debe ser un entero positivo valido");
     }
@@ -63,13 +64,16 @@ async function createActivity(grupoId: number, userId: number, nombre: string, p
     if (memberships.length !== participantes.length) {
         throw new Error("Todos los participantes deben pertenecer al grupo");
     }
-    // La escritura anidada crea la actividad y sus participantes en una transaccion.
+    const expense = initialExpense === undefined ? undefined : validateExpense(initialExpense);
+    if (expense && !participantes.includes(expense.pagadorId)) throw new Error("El pagador no participa de la actividad");
+    // Una única escritura anidada: actividad, participantes y gasto inicial se guardan juntos.
     const newActivity = await prisma.actividad.create({
         data: {
             nombre: nombre.trim(),
             startAt: fechaInicio ?? new Date(),
             grupoId,
             creadorId: userId,
+            ...(expense ? { gastos: { create: expense } } : {}),
             participantes: {
                 create: participantes.map((usuarioId) => ({ usuarioId }))
             }

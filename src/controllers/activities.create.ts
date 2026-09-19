@@ -12,8 +12,8 @@ async function create(req: AuthRequest, res: Response) {
         });
     }
     try{
-        const { nombre, participantes, startAt } = req.body ?? {};
-        const newActivity = await createActivity(grupoId, userId, nombre, participantes, startAt);
+        const { nombre, participantes, startAt, initialExpense } = req.body ?? {};
+        const newActivity = await createActivity(grupoId, userId, nombre, participantes, startAt, initialExpense);
         return res.status(201).json({
             message: "Actividad creada correctamente",
             newActivity

@@ -23,7 +23,13 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js",
+    "test": "npm run build && node --test tests/balances.test.mjs",
+    "test:e2e": "npm run build && npm --prefix frontend run build && node --experimental-vm-modules tests/e2e.mjs",
+    "prisma:validate": "prisma validate --config prisma7.config.ts",
+    "prisma:generate": "prisma generate --config prisma7.config.ts",
+    "prisma:migrate": "prisma migrate deploy --config prisma7.config.ts"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",

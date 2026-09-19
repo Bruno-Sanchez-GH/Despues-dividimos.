@@ -1,5 +1,5 @@
 import prisma from "../prisma.js";
-import { Prisma } from "../generated/prisma/client.js";
+import { validateExpense } from "./expenses.validate.js";
 
 async function createExpense(activityId: number, userId: number, concepto: string, monto: string, pagadorId: number) {
     if (!Number.isInteger(activityId) || activityId <= 0 || activityId > 2147483647) {
@@ -20,20 +20,7 @@ async function createExpense(activityId: number, userId: number, concepto: strin
     if (!membership) {
         throw new Error("El usuario no pertenece al grupo");
     }
-    if (typeof concepto !== "string" || !concepto.trim()) {
-        throw new Error("El concepto del gasto es obligatorio");
-    }
-    // Se recibe texto decimal para no perder precision ni redondear centavos.
-    if (typeof monto !== "string" || !/^(0|[1-9]\d{0,11})(\.\d{1,2})?$/.test(monto)) {
-        throw new Error("El monto debe ser un string decimal con hasta 12 enteros y 2 decimales");
-    }
-    const amount = new Prisma.Decimal(monto);
-    if (!amount.greaterThan(0)) {
-        throw new Error("El monto debe ser mayor a cero");
-    }
-    if (!Number.isInteger(pagadorId) || pagadorId <= 0 || pagadorId > 2147483647) {
-        throw new Error("El pagadorId debe ser un entero positivo valido");
-    }
+    const validated = validateExpense({ concepto, monto, pagadorId });
     const payer = await prisma.usuario.findUnique({
         where: { id: pagadorId },
         select: { id: true }
@@ -54,7 +41,7 @@ async function createExpense(activityId: number, userId: number, concepto: strin
             actividadId: activityId,
             pagadorId,
             concepto: concepto.trim(),
-            monto: amount
+            monto: validated.monto
         },
         include: {
             pagador: { select: { id: true, nombre: true } }
