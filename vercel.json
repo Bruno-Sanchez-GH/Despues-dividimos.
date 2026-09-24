@@ -14,7 +14,6 @@
     "backend": {
       "root": ".",
       "framework": "express",
-      "runtime": "nodejs24.x",
       "entrypoint": "src/server.ts"
     }
   },
