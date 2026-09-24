@@ -21,9 +21,13 @@
   "license": "MIT",
   "author": "Bruno Nicolas Sanchez",
   "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
   "main": "index.js",
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "postinstall": "npm run prisma:generate",
     "start": "node dist/server.js",
     "test": "npm run build && node --test tests/balances.test.mjs",
     "test:e2e": "npm run build && npm --prefix frontend run build && node --experimental-vm-modules tests/e2e.mjs",
@@ -42,6 +46,7 @@
     "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "^7.10.0",
     "bcrypt": "^6.0.0",
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.23.0"
