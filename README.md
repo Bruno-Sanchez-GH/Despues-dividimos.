@@ -2,11 +2,15 @@
 
 Aplicación para organizar grupos, actividades y gastos compartidos. El backend calcula divisiones igualitarias por actividad y balances agregados del grupo. El frontend consume la API real.
 
+**Demo pública:** [Después Dividimos](https://despues-dividimos.vercel.app/).
+
+**Qué demuestra este proyecto:** APIs REST, autenticación JWT, permisos por membresía, modelado relacional, escrituras atómicas y cálculo monetario exacto con centavos BigInt. Incluye frontend y pruebas matemáticas y de navegador; los resultados documentados corresponden a la última verificación registrada.
+
 ## Estado actual y contexto para revisión
 
 Este documento describe la implementación existente de **V5**, incluida la carga de aportes de varias personas en una misma operación. Sirve como contexto para revisar el proyecto sin asumir que hay que reconstruirlo desde cero. El código del repositorio es la fuente de verdad.
 
-- Backend y frontend implementados y probados localmente; publicación en internet pendiente.
+- Backend y frontend implementados. La demo pública está enlazada arriba; las instrucciones siguientes describen la ejecución local.
 - Última verificación realizada: **15 pruebas matemáticas y 49 comprobaciones de navegador aprobadas**, más compilación TypeScript y build de producción.
 - Prisma validado y generado; cinco migraciones aplicadas. V5 no agregó tablas ni modificó el schema de V4.
 - No hay datos ficticios de producto: nombres, grupos, actividades y gastos provienen del usuario o de la API.
@@ -104,7 +108,7 @@ Express sirve `frontend/dist` y resuelve las rutas directas del frontend. Las ru
 
 Si el frontend se despliega por separado, configurar `VITE_API_URL` antes de compilar, `FRONTEND_ORIGIN` en el backend y fallback de rutas a `index.html` en el alojamiento del frontend.
 
-No se realizó publicación automática. No hay seeds ni datos de demostración ocultos: el usuario crea sus grupos y actividades.
+No hay seeds ni datos de demostración ocultos: el usuario crea sus grupos y actividades.
 
 ## Arquitectura
 
@@ -252,6 +256,6 @@ La revisión final corrigió dos escrituras parciales de V1: grupo + membresía 
 
 Nuevo gasto permite elegir Una persona o Varias personas. En el segundo caso se ingresa el total y cuánto puso cada participante: los aportes deben sumar exactamente ese total. El backend guarda todos los aportes atómicamente como registros de gasto individuales, sin duplicar el total ni cambiar el schema. Las sugerencias de transferencias no registran pagos. El pago rápido es transitorio y no se sincroniza entre dispositivos hasta guardarlo.
 
-Antes de un despliegue público sostenido quedan como trabajo operativo la configuración HTTPS, alojamiento, variables y base de datos; recuperación de cuenta y límites de peticiones no forman parte de V5.
+El alojamiento, HTTPS, variables de entorno y base de datos requieren mantenimiento operativo. Recuperación de cuenta y límites de peticiones no forman parte de V5.
 
 El bloqueo de doble clic evita envíos simultáneos desde el formulario. No existe una clave de idempotencia del servidor que deduplique un reintento después de perder la respuesta de red. No se implementaron OCR, IA, chat, mapas ni reparto por consumo individual. Repartir el costo en partes iguales y permitir aportes diferentes son capacidades distintas: la app admite lo segundo sin cambiar lo primero.
